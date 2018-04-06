@@ -1,0 +1,55 @@
+const Sequelize = require("sequelize");
+
+const sequelize = new Sequelize("test-chat", "root", "123", {
+  dialect: "mysql",
+  define: {
+    timestamps: false
+  }
+});
+
+const Users = sequelize.define("users", {
+  id: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  login: {
+    type: Sequelize.STRING,
+    unique: true
+  },
+  password: Sequelize.STRING,
+  ban: Sequelize.BOOLEAN,
+  status: Sequelize.BOOLEAN,
+  mute: Sequelize.BOOLEAN,
+  admin: Sequelize.BOOLEAN
+});
+
+const Messages = sequelize.define("messages", {
+  id: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  loginID: {
+    type: Sequelize.INTEGER.UNSIGNED,
+    references: {
+      model: Users,
+      key: "id"
+    }
+  },
+  message: Sequelize.STRING(200),
+  date: Sequelize.DATE
+});
+Users.hasMany(Messages, { foreignKey: "loginID" });
+Messages.belongsTo(Users, { foreignKey: "loginID" });
+
+Messages.findAll()
+.then(a => {
+  return a[0].getUser({raw: true})})
+.then(a => console.log(a));
+
+Users.findAll()
+  .then(users => sers[0].getMessages({raw: true}))
+  .then(messages => console.log(messages));
+
+module.exports = {};
